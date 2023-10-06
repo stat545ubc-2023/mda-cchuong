@@ -447,7 +447,7 @@ will be creating a histogram of the values
 ggplot(cancer_sample,aes(area_mean))+ # Create the base
   # Plot a histogram of area_mean values, and change the colors to look nicer and make each bin 50 units
   geom_histogram(col="blue",fill="lightblue",binwidth = 50)+ 
-  labs(title="Distribution of area_mean") # Add a title
+  labs(title="Distribution of Mean Area ") # Add a title
 ```
 
 ![](Mini-Data-Analysis-Milestone-1_files/figure-gfm/Task%202_Exercise_1-1.png)<!-- -->
@@ -463,7 +463,7 @@ I am exploring the relationship between diagnosis and area_mean
 ``` r
 ggplot(cancer_sample,aes(x=diagnosis,y=area_mean))+ # Create base 
   geom_boxplot(fill="green")+ # Add a green boxplot
-  labs(title="Distribution of area_mean by diagnosis",
+  labs(title="Distribution of Mean area by Diagnosis ",
        x="Diagnosis",
        y="Mean Area")+ # Change axis labels and add a title
   scale_x_discrete(labels=c("Benign","Malignant")) # Change x axis tick labels
