@@ -145,7 +145,13 @@ understand your data.
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: cancer_sample 2: flow_sample 3: steam_games 4: vancouver_trees
+1: cancer_sample
+
+2: flow_sample
+
+3: steam_games
+
+4: vancouver_trees
 
 <!----------------------------------------------------------------------------->
 
@@ -209,8 +215,15 @@ glimpse(cancer_sample)
     ## $ symmetry_worst          <dbl> 0.4601, 0.2750, 0.3613, 0.6638, 0.2364, 0.3985…
     ## $ fractal_dimension_worst <dbl> 0.11890, 0.08902, 0.08758, 0.17300, 0.07678, 0…
 
-Attributes: \* 569 rows \* 32 columns \* All variables are
-numeric/doubles except diagnosis
+Attributes:
+
+- 569 rows (The top of the output lists the number of rows)
+
+- 32 columns (The top of the output lists the number of columns)
+
+- All variables are numeric/doubles except diagnosis (Next to the
+  variable name, the class of the variable is given in the form <class>
+  )
 
 # Dataset 2: flow_sample
 
@@ -228,9 +241,19 @@ glimpse(flow_sample)
     ## $ flow         <dbl> 314, 230, 264, 174, 232, 214, 236, 309, 174, 345, 185, 24…
     ## $ sym          <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 
-Attributes: \* 218 rows \* 7 columns \* 3 categorical/character
-variables : station_id, extreme_type and sym \* 4 numeric variables :
-year, month, day and flow
+Attributes:
+
+- 218 rows (The top of the output lists the number of rows)
+
+- 7 columns (The top of the output lists the number of columns)
+
+- 3 categorical/character variables : station_id, extreme_type and sym
+  (Next to the variable names, the class is shown, in this case <chr>,
+  which refers to the class “character”)
+
+- 4 numeric variables : year, month, day and flow (Next to the variable
+  names, the class is shown, in this case <dbl>, which refers to the
+  class “double”)
 
 # Dataset 3: steam_games
 
@@ -262,8 +285,14 @@ glimpse(steam_games)
     ## $ original_price           <dbl> 19.99, 29.99, 39.99, 44.99, 0.00, NA, 59.99, …
     ## $ discount_price           <dbl> 14.99, NA, NA, NA, NA, 35.18, 70.42, 17.58, N…
 
-Attributes: \* 40,833 rows \* 21 columns \* 17 categorical variables and
-4 numeric
+Attributes:
+
+- 40,833 rows (The top of the output lists the number of rows)
+
+- 21 columns (The top of the output lists the number of columns)
+
+- 17 categorical variables and 4 numeric (Next to the variable name, the
+  class of the variable is given in the form <class> )
 
 # Dataset 4: vancouver_trees
 
@@ -294,8 +323,16 @@ glimpse(vancouver_trees)
     ## $ longitude          <dbl> -123.1161, -123.1147, -123.0846, -123.0870, -123.08…
     ## $ latitude           <dbl> 49.21776, 49.21776, 49.23938, 49.23469, 49.23894, 4…
 
-Attributes: \* 146,611 rows \* 20 columns \* 12 categorical variables, 7
-numeric variables and 1 date variable
+Attributes:
+
+- 146,611 rows (The top of the output lists the number of rows)
+
+- 20 columns (The top of the output lists the number of columns)
+
+- 12 categorical variables, 7 numeric variables and 1 date variable
+  (Next to the variable name, the class of the variable is given in the
+  form <class> )
+
 <!----------------------------------------------------------------------------->
 
 1.3 **(1 point)** Now that you’ve explored the 4 datasets that you were
@@ -305,9 +342,10 @@ to choose this one? Briefly explain your choice below.
 <!-------------------------- Start your work below ---------------------------->
 
 I am going to choose the cancer_sample dataset. It has a good number of
-observations and columns, so lots to explore,doesn’t look too messy, and
-there is a categorical variables so so I can do different kinds of
-analyses
+observations and columns, so lots to explore, doesn’t look too messy
+(not a lot of NA’s or long strings in the cells), and there is a
+categorical variables so I can do different kinds of analyses for the
+different categorical variable levels.
 <!----------------------------------------------------------------------------->
 
 1.4 **(2 points)** Time for a final decision! Going back to the
@@ -320,7 +358,7 @@ dataset. Note it down below.
 <!-------------------------- Start your work below ---------------------------->
 
 I want to investigate the relationship between being diagnosed with a
-maliganent tumor (M) and area
+maliganant tumor (M) and area
 <!----------------------------------------------------------------------------->
 
 # Important note
@@ -393,7 +431,7 @@ sufficient comments for a reader to understand your reasoning and code.
 library(tidyverse)
 ```
 
-\#Exercise 1: Plot the distribution of a numeric variable
+# Exercise 1: Plot the distribution of a numeric variable
 
 I chose area_mean as the numeric variable, and since it is continuous, I
 will be creating a histogram of the values
@@ -406,10 +444,11 @@ ggplot(cancer_sample,aes(area_mean))+ # Create the base
 ```
 
 ![](Mini-Data-Analysis-Milestone-1_files/figure-gfm/Task%202_Exercise_1-1.png)<!-- -->
+
 I chose this exercise because the dataset has mostly numeric variables,
 so I could create many different plots.
 
-\#Exercise 2: Explore the relationship between 2 variables in a plot.
+# Exercise 2: Explore the relationship between 2 variables in a plot.
 
 I am exploring the relationship between diagnosis and area_mean
 
@@ -423,13 +462,13 @@ ggplot(cancer_sample,aes(x=diagnosis,y=area_mean))+ # Create base
 ```
 
 ![](Mini-Data-Analysis-Milestone-1_files/figure-gfm/Task%202_Exercise_2-1.png)<!-- -->
+
 I chose this exercise because there is a categorical variable with 2
 values, diagnosis. I can explore the relationship of diagnosis with
 another variable by seeing how the values of the second variable change
 based on diagnosis.
 
-\#Exercise 3: Filter observations in your data according to your own
-criteria.
+# Exercise 3: Filter observations in your data according to your own criteria.
 
 I am filtering the data to only those with diagnosis = “M”, or in other
 words, only observations where the patient was diagnosed with a
@@ -517,9 +556,17 @@ Write the 4 questions and any additional comments below.
 
 <!--- *****START HERE***** --->
 
-1.  Does the mean number of concave points (concave_points_mean) change
-    depending on if the patient is diagnosed with a malignant (M) or
-    benign (B) tumor?
+1.  Does the mean number of concave points (concave_points_mean) differ
+    between patients diagnosed with a malignant (M) of benign (B)
+    tumors?
+
+2.  Do patients with malignant tumors tend to have larger (i.e worse)
+    mean radius (radius_mean) than those with benign tumors?
+
+3.  What variables can be used to predict diagnosis?
+
+4.  Do patients with more concave points (concave_points_mean) also tend
+    to have more severe concavity (concavity_worse).
 
 <!----------------------------->
 
