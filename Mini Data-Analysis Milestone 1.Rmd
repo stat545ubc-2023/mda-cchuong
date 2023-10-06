@@ -178,11 +178,12 @@ Attributes:
 
 -   569 rows (The top of the output lists the number of rows)
 
--   32 columns (The top of the output lists the number of columns)
+-   32 columns/variables (The top of the output lists the number of
+    columns and there is one variable per column)
 
 -   All variables are numeric/doubles except diagnosis (Next to the
     variable name, the class of the variable is given in the form
-    <class> )
+    \<class\> )
 
 # Dataset 2: flow_sample
 
@@ -194,15 +195,16 @@ Attributes:
 
 -   218 rows (The top of the output lists the number of rows)
 
--   7 columns (The top of the output lists the number of columns)
+-   7 columns/variables (The top of the output lists the number of
+    columns and there is one variable per column)
 
--   3 categorical/character variables : station_id, extreme_type and sym (Next to the
-    variable names, the class is shown, in this case <chr>, which refers to the 
-    class "character")
+-   3 categorical/character variables : station_id, extreme_type and sym
+    (Next to the variable names, the class is shown, in this case
+    \<chr\>, which refers to the class "character")
 
 -   4 numeric variables : year, month, day and flow (Next to the
-    variable names, the class is shown, in this case <dbl>, which refers to the 
-    class "double")
+    variable names, the class is shown, in this case \<dbl\>, which
+    refers to the class "double")
 
 # Dataset 3: steam_games
 
@@ -214,11 +216,11 @@ Attributes:
 
 -   40,833 rows (The top of the output lists the number of rows)
 
--   21 columns (The top of the output lists the number of columns)
+-   21 columns/variables (The top of the output lists the number of
+    columns and there is one variable per column)
 
--   17 categorical variables and 4 numeric (Next to the
-    variable name, the class of the variable is given in the form
-    <class> )
+-   17 categorical variables and 4 numeric (Next to the variable name,
+    the class of the variable is given in the form \<class\> )
 
 # Dataset 4: vancouver_trees
 
@@ -230,11 +232,12 @@ Attributes:
 
 -   146,611 rows (The top of the output lists the number of rows)
 
--   20 columns (The top of the output lists the number of columns)
+-   20 columns/variables (The top of the output lists the number of
+    columns and there is one variable per column)
 
--   12 categorical variables, 7 numeric variables and 1 date variable (Next to the
-    variable name, the class of the variable is given in the form
-    <class> )
+-   12 categorical variables, 7 numeric variables and 1 date variable
+    (Next to the variable name, the class of the variable is given in
+    the form \<class\> )
 
 <!----------------------------------------------------------------------------->
 
@@ -245,9 +248,10 @@ to choose this one? Briefly explain your choice below.
 <!-------------------------- Start your work below ---------------------------->
 
 I am going to choose the cancer_sample dataset. It has a good number of
-observations and columns, so lots to explore, doesn't look too messy (not a lot
-of NA's or long strings in the cells), and there is a categorical variables so 
-I can do different kinds of analyses for the different categorical variable levels.
+observations and columns, so there is lots to explore, doesn't look too
+messy (not a lot of NA's or long strings in the cells I need to parse),
+and there is a categorical variable so I can do different kinds of
+analyses for the different categorical variable levels.
 <!----------------------------------------------------------------------------->
 
 1.4 **(2 points)** Time for a final decision! Going back to the
@@ -259,8 +263,11 @@ dataset. Note it down below.
 
 <!-------------------------- Start your work below ---------------------------->
 
-I want to investigate the relationship between being diagnosed with a
-maliganant tumor (M) and area
+Is there a relationship between being diagnosed with a malignant tumor
+(M) and mean nuclei area?
+
+Or, in terms of the variables, does radius_mean differ between patients
+with diagnosis="M" and patients with diagnosis="B"?
 <!----------------------------------------------------------------------------->
 
 # Important note
@@ -327,13 +334,13 @@ sufficient comments for a reader to understand your reasoning and code.
 
 <!-------------------------- Start your work below ---------------------------->
 
-# Load packages
+## Load packages
 
 ```{r}
 library(tidyverse)
 ```
 
-# Exercise 1: Plot the distribution of a numeric variable
+## Exercise 1: Plot the distribution of a numeric variable
 
 I chose area_mean as the numeric variable, and since it is continuous, I
 will be creating a histogram of the values
@@ -342,19 +349,20 @@ will be creating a histogram of the values
 ggplot(cancer_sample,aes(area_mean))+ # Create the base
   # Plot a histogram of area_mean values, and change the colors to look nicer and make each bin 50 units
   geom_histogram(col="blue",fill="lightblue",binwidth = 50)+ 
-  labs(title="Distribution of Mean Area") # Add a title
+  labs(title="Distribution of area_mean") # Add a title
 ```
 
 I chose this exercise because the dataset has mostly numeric variables,
-so I could create many different plots.
+so I could create many different plots. And it makes sense to plot the
+distribution of area_mean to see the range of mean nuclei sizes.
 
-# Exercise 2: Explore the relationship between 2 variables in a plot.
+## Exercise 2: Explore the relationship between 2 variables in a plot.
 
 I am exploring the relationship between diagnosis and area_mean
 
 ```{r,Task 2_Exercise_2}
 ggplot(cancer_sample,aes(x=diagnosis,y=area_mean))+ # Create base 
-  geom_boxplot(fill="chartreuse")+ # Add a green boxplot
+  geom_boxplot(fill="green")+ # Add a green boxplot
   labs(title="Distribution of area_mean by diagnosis",
        x="Diagnosis",
        y="Mean Area")+ # Change axis labels and add a title
@@ -363,10 +371,10 @@ ggplot(cancer_sample,aes(x=diagnosis,y=area_mean))+ # Create base
 
 I chose this exercise because there is a categorical variable with 2
 values, diagnosis. I can explore the relationship of diagnosis with
-another variable by seeing how the values of the second variable change
-based on diagnosis.
+area_mean and see how the values of the area_mean differ based on
+diagnosis.
 
-# Exercise 3: Filter observations in your data according to your own criteria.
+## Exercise 3: Filter observations in your data according to your own criteria.
 
 I am filtering the data to only those with diagnosis = "M", or in other
 words, only observations where the patient was diagnosed with a
@@ -379,15 +387,15 @@ malignant <- cancer_sample %>%
 malignant
 ```
 
-I chose this exercise because my original question was about the
-relationship between being diagnosed with a malignant (M) tumor, so it
-makes sense to filter the observations to only contain observations
-where the diagnosis is "M"
+I chose this exercise because I may want to explore the relationships or 
+distributions of variables for people diagnosed with malignant tumors, so it 
+makes sense to only use the observations where patients were diagnosed with 
+malignant tumors (diagnosis="M")
 
-# Exercise 4: Make a new tibble with a subset of your data
 
-I am going to remove the "\*\_se" variables because I am not interested
-in them.
+## Exercise 4: Make a new tibble with a subset of your data
+
+I am going to remove the columns with the "se" variables
 
 ```{r,Task 2_Exercise_4}
 cancer_subset <- cancer_sample %>% 
@@ -396,9 +404,10 @@ cancer_subset <- cancer_sample %>%
 cancer_subset
 ```
 
-I chose this exercise because the data has many variables/columns, so
-realistically I won't use all of them, so it makes sense to create a
-subset of the tibble.
+I chose this exercise because my dataset has many columns, and since I
+am not investigating the standard errors of the variables, I won't be
+using all the columns with "se" in them, so it makes sense to remove
+them.
 
 <!----------------------------------------------------------------------------->
 
@@ -413,16 +422,15 @@ Write the 4 questions and any additional comments below.
 <!--- *****START HERE***** --->
 
 1.  Does the mean number of concave points (concave_points_mean) differ
-    between patients diagnosed with a malignant (M) of benign (B)
-    tumors?
+    between patients diagnosed with a malignant (M) or benign (B) tumor?
 
-2.  Do patients with malignant tumors tend to have larger (i.e worse)
-    mean radius (radius_mean) than those with benign tumors?
+2.  Do patients with malignant tumors tend to have larger/worse
+    nuclei radius (radius_worse) than those with benign tumors?
 
-3.  What variables can be used to predict diagnosis?
+3.  What variables can be used to predict mean texture (texture_mean)?
 
 4.  Do patients with more concave points (concave_points_mean) also tend
-    to have more severe concavity (concavity_worse).
+    to have more severe concavity (concavity_worse)?
 
 <!----------------------------->
 
