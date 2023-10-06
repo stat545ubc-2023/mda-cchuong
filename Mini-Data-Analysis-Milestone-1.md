@@ -440,7 +440,7 @@ will be creating a histogram of the values
 ggplot(cancer_sample,aes(area_mean))+ # Create the base
   # Plot a histogram of area_mean values, and change the colors to look nicer and make each bin 50 units
   geom_histogram(col="blue",fill="lightblue",binwidth = 50)+ 
-  labs(title="Distribution of area_mean") # Add a title
+  labs(title="Distribution of Mean Area") # Add a title
 ```
 
 ![](Mini-Data-Analysis-Milestone-1_files/figure-gfm/Task%202_Exercise_1-1.png)<!-- -->
