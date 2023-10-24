@@ -94,8 +94,8 @@ were. This will guide your work through milestone 2:
 3.  Do patients with more concave points (concave_points_mean) also tend
     to have more severe concavity (concavity_worse)?
 
-4.  Does the distribution of worst concavity (concavity_worse) change
-    between patients with a malignant or benign tumor?
+4.  Can mean smoothness (smoothness_mean) be used to predict mean
+    texture (texture_mean)?
 
 Note: This question has been changed because the originally was a bit
 too vague with how many variables there are, and did not really fit the
@@ -319,76 +319,64 @@ This helps answer the research question because I can see if there is a
 trend or relationship between the 2 variables.From this scatterplot I
 can see there is a pretty strong relationship
 
-#### Research Question 4: Does the distribution of worst concavity (concavity_worse) change between patients with a malignant or benign tumor?
+#### Research Question 4: Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
 
-**Summarizing**: Compute the proportion and counts in each category of
-one categorical variable across the groups of another categorical
-variable from your data. Do not use the function `table()`!
+**Summarizing**: Create a categorical variable with 3 or more groups
+from an existing numerical variable. You can use this new variable in
+the other tasks! *An example: age in years into “child, teen, adult,
+senior”.*
 
-``` r
-q4_table <- q3_table %>% 
-  group_by(diagnosis,concave_worst_category) %>% 
-  summarise(n =n()) %>% 
-  mutate(prop=n/sum(n))
-
-q4_table
-```
-
-    ## # A tibble: 6 × 4
-    ## # Groups:   diagnosis [2]
-    ##   diagnosis concave_worst_category     n    prop
-    ##   <chr>     <chr>                  <int>   <dbl>
-    ## 1 B         large                      1 0.00280
-    ## 2 B         medium                    12 0.0336 
-    ## 3 B         small                    344 0.964  
-    ## 4 M         large                      6 0.0283 
-    ## 5 M         medium                    84 0.396  
-    ## 6 M         small                    122 0.575
-
-**Graphing**: Create 3 histograms, with each histogram having different
-sized bins. Pick the “best” one and explain why it is the best.
-
-**10 bins**
+I am creating a categorical variable describing the quartiles
 
 ``` r
-ggplot(cancer_sample,aes(concavity_worst))+
-  geom_histogram(aes(fill=diagnosis),bins=10)+
-  labs(x="Worst Concavity",
-       title="Distribution of Worst Concavity by Diagnosis with 10 bins")
+quantile(cancer_sample$texture_mean)
 ```
 
-![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ3_1-1.png)<!-- -->
-
-**30 bins**
+    ##    0%   25%   50%   75%  100% 
+    ##  9.71 16.17 18.84 21.80 39.28
 
 ``` r
-ggplot(cancer_sample,aes(concavity_worst))+
-  geom_histogram(aes(fill=diagnosis),bins=30)+
-  labs(x="Worst Concavity",
-      title="Distribution of Worst Concavity by Diagnosis with 30 bins")
+q4_table <- cancer_sample %>%
+  mutate(texture_mean_quartile = case_when(texture_mean < 16.17~ "Quartile 1",
+                                           texture_mean >= 16.17 & texture_mean < 18.84 ~ "Quartile 2",
+                                           texture_mean >= 18.84 & texture_mean < 21.8 ~ "Quartile 3",
+                                           .default = "Quartile 4")) 
+head(select(q4_table,texture_mean,texture_mean_quartile))
 ```
 
-![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ3_2-1.png)<!-- -->
+    ## # A tibble: 6 × 2
+    ##   texture_mean texture_mean_quartile
+    ##          <dbl> <chr>                
+    ## 1         10.4 Quartile 1           
+    ## 2         17.8 Quartile 2           
+    ## 3         21.2 Quartile 3           
+    ## 4         20.4 Quartile 3           
+    ## 5         14.3 Quartile 1           
+    ## 6         15.7 Quartile 1
 
-**100 bins**
+Splitting into categories/quartiles helps answer the research question
+because having categories instead of just numeric variables makes it
+easier to quantify what is larger.
+
+Graphing: Create a graph that has at least two geom layers.
 
 ``` r
-ggplot(cancer_sample,aes(concavity_worst))+
-  geom_histogram(aes(fill=diagnosis),bins=100)+
-  labs(x="Worst Concavity",
-     title="Distribution of Worst Concavity by Diagnosis with 100 bins")
+ggplot(cancer_sample,aes(smoothness_mean,texture_mean))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  labs(x="Mean Smoothness",
+       y="Mean Texture",
+       title = "Scatterplot of Mean Smoothness vs Mean Texture")
 ```
 
-![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ3_3-1.png)<!-- -->
+    ## `geom_smooth()` using formula = 'y ~ x'
 
-The best choice of bins is probably bins=30. With 10 bins, the bins are
-too wide, and information is lost. 100 bins is too much and makes
-patterns harder to see.
-
-This graph/graphs helps answer the research question because we can see
-that the distribution of worst concavity is more skewed to the left for
-patients with benign tumors than for patients with malignant tumors.
-This indicates patients with benign tumors have not as bad concavity.
+![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ4-1.png)<!-- -->
+This plot helps answer the research question because geom_smooth adds
+the regression line, and a steeper slope indicates a stronger
+relationship, and can indicate if the variables can be used for
+prediction. Here we can see the line is mostly flat, indicating mean
+smoothness is not a good predictor.
 
 <!----------------------------------------------------------------------------->
 
@@ -418,13 +406,9 @@ between the number of concave points and worst concavity, which
 indicates patients with more concave points also tend to have worse
 concavity.
 
-**Research Question 4:** The summary table shows over 90% of benign
-patients only have small concavity, but with malignant patients, it only
-around 50%. The histogram also shows the distribution of benign patients
-is more left-skewed than malignant patients. While there does appear to
-be a change in distribution, both diagnoses have a majority in the small
-category, so it is unclear if the difference is significant.
-
+**Research Question 4:** The plot seems to indicate smoothness mean is
+not a good predictor because it is fairly flat, but this has not been
+formally tested, so I can’t be sure
 <!----------------------------------------------------------------------------->
 
 # Task 2: Tidy your data
