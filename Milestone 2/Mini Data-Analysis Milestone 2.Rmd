@@ -63,7 +63,7 @@ First, write out the 4 research questions you defined in milestone 1 were. This 
 
 3.  Do patients with more concave points (concave_points_mean) also tend to have more severe concavity (concavity_worse)?
 
-4. Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
+4.  Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
 
 Note: This question has been changed because the originally was a bit too vague with how many variables there are, and did not really fit the tasks.
 
@@ -134,7 +134,7 @@ ggplot(cancer_sample, aes(concave_points_mean,fill=diagnosis,color=diagnosis))+
 
 When plotting densities, it makes sense to change the transparency so you can see both densities even when they are overlapping.
 
-This helps answer the research question because I can see that the density of mean concave points for the benign group is more skewed to the left while the density of mean points for the malignant group is more to the right, indicating they may have more comcave points on average.
+This helps answer the research question because I can see that the density of mean concave points for the benign group is more skewed to the left while the density of mean points for the malignant group is more to the right, indicating they may have more concave points on average.
 
 #### Research Question 2: Do patients with malignant tumors tend to have larger/worse nuclei radius (radius_worse) than those with benign tumors?
 
@@ -197,15 +197,14 @@ ggplot(q3_table,aes(concave_worst_category,concave_points_mean))+
 
 ```
 
-This helps answer the research question because I look at the distribution of mean concave points by
-worst concavity category. We do see with worse concavity, the mean concave points are higher, but the 
-points do highlight that there aren't as many points in the worse categories
+This helps answer the research question because I look at the distribution of mean concave points by worst concavity category. We do see with worse concavity, the mean concave points are higher, but the points do highlight that there aren't as many points in the worse categories
 
 #### Research Question 4: Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
 
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
 
 I am creating a categorical variable describing the quartiles
+
 ```{r}
 quantile(cancer_sample$texture_mean)
 ```
@@ -218,9 +217,11 @@ q4_table <- cancer_sample %>%
                                            .default = "Quartile 4")) 
 head(select(q4_table,texture_mean,texture_mean_quartile))
 ```
+
 Splitting into categories/quartiles helps answer the research question because having categories instead of just numeric variables makes it easier to quantify what is larger.
 
 Graphing: Create a graph that has at least two geom layers.
+
 ```{r,Task 1.2_RQ4}
 ggplot(cancer_sample,aes(smoothness_mean,texture_mean))+
   geom_point()+
@@ -229,6 +230,7 @@ ggplot(cancer_sample,aes(smoothness_mean,texture_mean))+
        y="Mean Texture",
        title = "Scatterplot of Mean Smoothness vs Mean Texture")
 ```
+
 This plot helps answer the research question because geom_smooth adds the regression line, and a steeper slope indicates a stronger relationship, and can indicate if the variables can be used for prediction. Here we can see the line is mostly flat, indicating mean smoothness is not a good predictor.
 
 <!----------------------------------------------------------------------------->
@@ -245,8 +247,7 @@ Based on the operations that you've completed, how much closer are you to answer
 
 **Research Question 3:** There does seem to be a positive relationship between worst concavity and mean concave points. The boxplots showed that as the category went from small to large, the mean number of points also went up.
 
-**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because it is fairly flat, but this has not been formally tested, so I can't be sure
-<!----------------------------------------------------------------------------->
+**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because it is fairly flat, but this has not been formally tested, so I can't be sure <!----------------------------------------------------------------------------->
 
 # Task 2: Tidy your data
 
@@ -274,7 +275,7 @@ cancer_subset
 length(unique(cancer_subset$ID)) == nrow(cancer_subset)
 ```
 
-The number of unique patient ID's is equal to the number of rows, so each row is a unique observation.
+The number of unique patient ID's is equal to the number of rows, so each row is a unique observation/patient.
 
 ```{r}
 names(cancer_subset)
@@ -368,6 +369,7 @@ rq_data <- cancer_sample %>%
                                            concavity_worst >= 0.45 & concavity_worst < 0.9 ~ "medium",
                                            .default = "large")) 
 rq_data
+glimpse(rq_data)
 ```
 
 <!----------------------------------------------------------------------------->
@@ -417,7 +419,7 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 <!-------------------------- Start your work below ---------------------------->
 
-I am going to use the broom package to display the regression coefficients
+I am going to use the tidy() function from the broom package to display the regression coefficients, which includes the estimate of the coefficient, the standard error, the test statistic and p-value
 
 ```{r}
 broom::tidy(mod.fit)

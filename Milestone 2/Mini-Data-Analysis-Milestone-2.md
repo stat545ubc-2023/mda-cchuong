@@ -210,7 +210,7 @@ you can see both densities even when they are overlapping.
 This helps answer the research question because I can see that the
 density of mean concave points for the benign group is more skewed to
 the left while the density of mean points for the malignant group is
-more to the right, indicating they may have more comcave points on
+more to the right, indicating they may have more concave points on
 average.
 
 #### Research Question 2: Do patients with malignant tumors tend to have larger/worse nuclei radius (radius_worse) than those with benign tumors?
@@ -372,6 +372,7 @@ ggplot(cancer_sample,aes(smoothness_mean,texture_mean))+
     ## `geom_smooth()` using formula = 'y ~ x'
 
 ![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ4-1.png)<!-- -->
+
 This plot helps answer the research question because geom_smooth adds
 the regression line, and a steeper slope indicates a stronger
 relationship, and can indicate if the variables can be used for
@@ -461,7 +462,7 @@ length(unique(cancer_subset$ID)) == nrow(cancer_subset)
     ## [1] TRUE
 
 The number of unique patient ID’s is equal to the number of rows, so
-each row is a unique observation.
+each row is a unique observation/patient.
 
 ``` r
 names(cancer_subset)
@@ -637,6 +638,18 @@ rq_data
     ## 10   9.04e5 M                       0.156           0.705 medium                
     ## # ℹ 559 more rows
 
+``` r
+glimpse(rq_data)
+```
+
+    ## Rows: 569
+    ## Columns: 5
+    ## $ ID                     <dbl> 865423, 899987, 873592, 8611555, 86355, 9112962…
+    ## $ diagnosis              <chr> "M", "M", "M", "M", "M", "M", "M", "M", "M", "M…
+    ## $ concave_points_mean    <dbl> 0.2012, 0.1913, 0.1878, 0.1845, 0.1823, 0.1689,…
+    ## $ concavity_worst        <dbl> 0.5803, 0.6451, 0.5340, 0.6476, 0.9608, 0.6833,…
+    ## $ concave_worst_category <chr> "medium", "medium", "medium", "medium", "large"…
+
 <!----------------------------------------------------------------------------->
 
 # Task 3: Modelling
@@ -714,8 +727,9 @@ Y, or a single value like a regression coefficient or a p-value.
 
 <!-------------------------- Start your work below ---------------------------->
 
-I am going to use the broom package to display the regression
-coefficients
+I am going to use the tidy() function from the broom package to display
+the regression coefficients, which includes the estimate of the
+coefficient, the standard error, the test statistic and p-value
 
 ``` r
 broom::tidy(mod.fit)
