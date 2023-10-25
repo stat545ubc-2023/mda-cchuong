@@ -141,6 +141,7 @@ This helps answer the research question because I can see that the density of me
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! An example: age in years into "child, teen, adult, senior".
 
 I split the range into 3 to make the cutoffs for my categories.
+
 ```{r}
 range(cancer_sample$radius_worst)
 seq(7.93,36.04,length.out=4)
@@ -181,6 +182,7 @@ This helps answer the research question because I can see how many observations 
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
 
 I split the range into 3 to make the cutoffs for my categories.
+
 ```{r}
 range(cancer_sample$concavity_worst)
 seq(0,1.252,length.out=4)
@@ -215,6 +217,7 @@ This helps answer the research question because I look at the distribution of me
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
 
 I am creating a categorical variable classifying the mean texture by the quartiles
+
 ```{r}
 quantile(cancer_sample$texture_mean)
 ```
@@ -230,7 +233,7 @@ head(select(q4_table,texture_mean,texture_mean_quartile))
 
 Splitting into categories/quartiles helps answer the research question because having categories instead of just numeric variables makes it easier to quantify what is larger.
 
-Graphing: Create a graph that has at least two geom layers.
+**Graphing**: Create a graph that has at least two geom layers.
 
 ```{r,Task 1.2_RQ4}
 ggplot(cancer_sample,aes(smoothness_mean,texture_mean))+
@@ -251,13 +254,13 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
-**Research Question 1:** The plot seems to indicate patients with malignant tumors have more concave points. The summary statistics also show this, but because the units of measurement are so small, it is a bit unclear if this is a significant difference.
+**Research Question 1:** The plot seems to indicate patients with malignant tumors have more concave points. The summary statistics also show this, but because the units of measurement are so small, it is a bit unclear if this is a significant difference. The question could potentially be better answered if I did a hypothesis test to see if the difference is significant
 
-**Research Question 2:** From the bar chart, it is pretty clear that patients with malignant tumors tend to have worse concavity. The majority of benign patients have small concavity, while malignant patients have most medium, and only malignant patients had any large concavity.
+**Research Question 2:** From the bar chart, it is pretty clear that patients with malignant tumors tend to have worse concavity. The majority of benign patients have small concavity, while malignant patients have most medium, and only malignant patients had any large concavity. I think this question is mostly answered.
 
-**Research Question 3:** There does seem to be a positive relationship between worst concavity and mean concave points. The boxplots showed that as the category went from small to large, the mean number of points also went up, though this difference is small between large and medium, potentially due to lack of data.
+**Research Question 3:** There does seem to be a positive association between worst concavity and mean concave points. The boxplots showed that as the category went from small to large, the mean number of points also went up, though this difference is small between large and medium, potentially due to lack of data. I think this question is mostly answered.
 
-**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because the regression/smooth line is fairly flat, but this has not been formally tested, so I can't be sure. <!----------------------------------------------------------------------------->
+**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because the regression/smooth line is fairly flat, but this has not been formally tested, so I can't be sure. Actually fitting a model and doing a test on the regression coefficients may help fully answer this question. <!----------------------------------------------------------------------------->
 
 # Task 2: Tidy your data
 
@@ -283,12 +286,15 @@ cancer_subset
 ```
 
 If each row is an observation, there should be no repeat ID's
+
 ```{r}
 length(unique(cancer_subset$ID)) == nrow(cancer_subset)
 ```
+
 The number of unique patient ID's is equal to the number of rows, so each row is a unique observation/patient.
 
 Next, I need to check if every column is a variable
+
 ```{r}
 names(cancer_subset)
 length(names(cancer_subset)) == ncol(cancer_subset)
@@ -380,6 +386,7 @@ Now, try to choose a version of your data that you think will be appropriate to 
 Since there are overlapping variables, I am going to create one dataset.
 
 I am selecting the relevant columns, removing any NA's if there are any, arranging into increasing order and remaking the categorical variable I made in Task 1.2 in case I want to use it.
+
 ```{r}
 rq_data <- cancer_sample %>% 
   select(ID, diagnosis,concave_points_mean,concavity_worst) %>% 
@@ -439,7 +446,7 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 
 <!-------------------------- Start your work below ---------------------------->
 
-I am going to use the tidy() function from the broom package to display the regression coefficients, which includes the estimate of the coefficient, the standard error, the test statistic and p-value
+I am going to use the tidy() function from the broom package to display the regression coefficients, which includes the estimate of the coefficient, the standard error, the test statistic and p-value. The main thing I am looking for is the estimate of the regression coefficient, which is in the column "estimate" and next to "concave_points_mean" since I am only interested in the regression coefficient for that variable.
 
 ```{r}
 broom::tidy(mod.fit)
@@ -461,6 +468,7 @@ Take a summary table that you made from Task 1, and write it as a csv file in yo
 -   **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file.
 
 <!-------------------------- Start your work below ---------------------------->
+I am going to turn the summary table from Task 1.2, Research Question 3 into a csv. The table created a categorical variable from concavity_worst
 
 ```{r,message=FALSE}
 library(here)
