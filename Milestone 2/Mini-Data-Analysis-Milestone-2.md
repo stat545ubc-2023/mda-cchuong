@@ -303,21 +303,21 @@ across groups.
 **Graphing**: Create a graph that has at least two geom layers.
 
 ``` r
-ggplot(cancer_sample,aes(concave_points_mean,concave_points_worst))+
-  geom_point()+
-  geom_smooth(method="lm")+
-  labs(x="Mean concave points",
-       y="Worst concavity",
-       title = "Scatterplot of Mean concave points vs Worst concavity")
+ggplot(q3_table,aes(concave_worst_category,concave_points_mean))+
+  geom_boxplot(fill="lightblue")+
+  geom_jitter(color="green", size=0.4, alpha=0.9)+
+  labs(y="Mean concave points",
+       x="Worst concavity category",
+       title = "Mean concave points by Worst concavity")
 ```
-
-    ## `geom_smooth()` using formula = 'y ~ x'
 
 ![](Mini-Data-Analysis-Milestone-2_files/figure-gfm/Task%201.2_RQ3-1.png)<!-- -->
 
-This helps answer the research question because I can see if there is a
-trend or relationship between the 2 variables.From this scatterplot I
-can see there is a pretty strong relationship
+This helps answer the research question because I look at the
+distribution of mean concave points by worst concavity category. We do
+see with worse concavity, the mean concave points are higher, but the
+points do highlight that there aren’t as many points in the worse
+categories
 
 #### Research Question 4: Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
 
@@ -401,10 +401,10 @@ majority of benign patients have small concavity, while malignant
 patients have most medium, and only malignant patients had any large
 concavity.
 
-**Research Question 3:** There is a pretty strong linear relationship
-between the number of concave points and worst concavity, which
-indicates patients with more concave points also tend to have worse
-concavity.
+**Research Question 3:** There does seem to be a positive relationship
+between worst concavity and mean concave points. The boxplots showed
+that as the category went from small to large, the mean number of points
+also went up.
 
 **Research Question 4:** The plot seems to indicate smoothness mean is
 not a good predictor because it is fairly flat, but this has not been
@@ -594,8 +594,8 @@ relates to the difference between patients with benign and malignant
 tumors. And while I think there has been progress answer it, I think a
 formal hypothesis test or more analyses would help.
 
-For the second research question, now that I can see there is a strong
-linear relationship, I want to explore it more, possibly by fitting a
+For the second research question, now that I can see there is a positive
+relationship, I think I could explore it more, possibly by fitting a
 regression model and seeing how well it fits.
 <!----------------------------------------------------------------------------->
 
@@ -614,7 +614,7 @@ Since there are overlapping variables, I am going to create one dataset.
 ``` r
 rq_data <- cancer_sample %>% 
   select(ID, diagnosis,concave_points_mean,concavity_worst) %>% 
-  filter(concave_points_mean > 0) %>% 
+  filter(!is.na(concave_points_mean) & !is.na(concavity_worst)) %>% 
   arrange(desc(concave_points_mean)) %>% 
   mutate(concave_worst_category = case_when(concavity_worst < 0.45~ "small",
                                            concavity_worst >= 0.45 & concavity_worst < 0.9 ~ "medium",
@@ -622,7 +622,7 @@ rq_data <- cancer_sample %>%
 rq_data
 ```
 
-    ## # A tibble: 556 × 5
+    ## # A tibble: 569 × 5
     ##          ID diagnosis concave_points_mean concavity_worst concave_worst_category
     ##       <dbl> <chr>                   <dbl>           <dbl> <chr>                 
     ##  1   8.65e5 M                       0.201           0.580 medium                
@@ -635,7 +635,7 @@ rq_data
     ##  8   8.61e6 M                       0.160           0.768 medium                
     ##  9   8.81e6 M                       0.160           0.320 small                 
     ## 10   9.04e5 M                       0.156           0.705 medium                
-    ## # ℹ 546 more rows
+    ## # ℹ 559 more rows
 
 <!----------------------------------------------------------------------------->
 
@@ -680,7 +680,8 @@ specifics in STAT 545.
 <!-------------------------- Start your work below ---------------------------->
 
 I am fitting a linear model with worst concavity as the response and
-mean concave points as the predictor.
+mean concave points as the predictor. I am going to test for the
+singificance of the regression coefficients
 
 ``` r
 mod.fit <- lm(concavity_worst ~ concave_points_mean, data= rq_data)
@@ -693,7 +694,7 @@ mod.fit
     ## 
     ## Coefficients:
     ##         (Intercept)  concave_points_mean  
-    ##             0.07897              3.98657
+    ##              0.0743               4.0453
 
 <!----------------------------------------------------------------------------->
 
@@ -721,10 +722,10 @@ broom::tidy(mod.fit)
 ```
 
     ## # A tibble: 2 × 5
-    ##   term                estimate std.error statistic  p.value
-    ##   <chr>                  <dbl>     <dbl>     <dbl>    <dbl>
-    ## 1 (Intercept)           0.0790   0.00965      8.19 1.88e-15
-    ## 2 concave_points_mean   3.99     0.153       26.1  1.78e-98
+    ##   term                estimate std.error statistic   p.value
+    ##   <chr>                  <dbl>     <dbl>     <dbl>     <dbl>
+    ## 1 (Intercept)           0.0743   0.00928      8.00 6.89e- 15
+    ## 2 concave_points_mean   4.05     0.149       27.2  7.02e-105
 
 We can see the coefficient for concave_points_mean is about 4, with a
 very small p-value, meaning it does significantly predict
@@ -787,7 +788,7 @@ readRDS(file=here("output","model.rds"))
     ## 
     ## Coefficients:
     ##         (Intercept)  concave_points_mean  
-    ##             0.07897              3.98657
+    ##              0.0743               4.0453
 
 <!----------------------------------------------------------------------------->
 
