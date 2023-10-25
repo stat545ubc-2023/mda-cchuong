@@ -140,6 +140,12 @@ This helps answer the research question because I can see that the density of me
 
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! An example: age in years into "child, teen, adult, senior".
 
+I split the range into 3 to make the cutoffs for my categories.
+```{r}
+range(cancer_sample$radius_worst)
+seq(7.93,36.04,length.out=4)
+```
+
 ```{r}
 q2_table <- cancer_sample %>%
   mutate(radius_worst_category = case_when(radius_worst < 17~ "small",
@@ -168,16 +174,22 @@ ggplot(q2_table,aes(radius_worst_category),fill=diagnosis)+
 
 I used bar plots because I have counts, and I added the counts above each bar to make them easier to look at.
 
-This helps answer the research question because I can see how many observations from each group have each radius size. And I can see people with benign tumors have mostly small radius' while people with malignant tumors have larger.
+This helps answer the research question because I can see how many observations from each group have each radius size. And I can see people with benign tumors have mostly small radius' while people with malignant tumors have larger, so patients with malignant tumors do seem to have larger radius's.
 
 #### Research Question 3: Do patients with more concave points (concave_points_mean) also tend to have more severe concavity (concavity_worse)?
 
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
 
+I split the range into 3 to make the cutoffs for my categories.
+```{r}
+range(cancer_sample$concavity_worst)
+seq(0,1.252,length.out=4)
+```
+
 ```{r}
 q3_table <- cancer_sample %>%
-  mutate(concave_worst_category = case_when(concavity_worst < 0.45~ "small",
-                                           concavity_worst >= 0.45 & concavity_worst < 0.9 ~ "medium",
+  mutate(concave_worst_category = case_when(concavity_worst < 0.42~ "small",
+                                           concavity_worst >= 0.42 & concavity_worst < 0.84 ~ "medium",
                                            .default = "large")) 
 
 head(select(q3_table,concavity_worst,concave_worst_category))
@@ -194,17 +206,15 @@ ggplot(q3_table,aes(concave_worst_category,concave_points_mean))+
   labs(y="Mean concave points",
        x="Worst concavity category",
        title = "Mean concave points by Worst concavity")
-
 ```
 
-This helps answer the research question because I look at the distribution of mean concave points by worst concavity category. We do see with worse concavity, the mean concave points are higher, but the points do highlight that there aren't as many points in the worse categories
+This helps answer the research question because I look at the distribution of mean concave points by worst concavity category. We do see with worse concavity, the mean concave points are higher, but the points do highlight that there aren't as many points in the worse categories, and the difference bwteen medium and large is not that big.
 
 #### Research Question 4: Can mean smoothness (smoothness_mean) be used to predict mean texture (texture_mean)?
 
 **Summarizing**: Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks! *An example: age in years into "child, teen, adult, senior".*
 
-I am creating a categorical variable describing the quartiles
-
+I am creating a categorical variable classifying the mean texture by the quartiles
 ```{r}
 quantile(cancer_sample$texture_mean)
 ```
@@ -245,9 +255,9 @@ Based on the operations that you've completed, how much closer are you to answer
 
 **Research Question 2:** From the bar chart, it is pretty clear that patients with malignant tumors tend to have worse concavity. The majority of benign patients have small concavity, while malignant patients have most medium, and only malignant patients had any large concavity.
 
-**Research Question 3:** There does seem to be a positive relationship between worst concavity and mean concave points. The boxplots showed that as the category went from small to large, the mean number of points also went up.
+**Research Question 3:** There does seem to be a positive relationship between worst concavity and mean concave points. The boxplots showed that as the category went from small to large, the mean number of points also went up, though this difference is small between large and medium, potentially due to lack of data.
 
-**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because it is fairly flat, but this has not been formally tested, so I can't be sure <!----------------------------------------------------------------------------->
+**Research Question 4:** The plot seems to indicate smoothness mean is not a good predictor because the regression/smooth line is fairly flat, but this has not been formally tested, so I can't be sure. <!----------------------------------------------------------------------------->
 
 # Task 2: Tidy your data
 
@@ -265,23 +275,26 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 <!--------------------------- Start your work below --------------------------->
 
-Since my dataset has many columns, I will use the first 8
+Since my dataset has many columns, I will use the first 8 columns
 
 ```{r}
 cancer_subset<- cancer_sample[,1:8]
 cancer_subset
+```
 
-# Check if every row is a unique patients
+If each row is an observation, there should be no repeat ID's
+```{r}
 length(unique(cancer_subset$ID)) == nrow(cancer_subset)
 ```
-
 The number of unique patient ID's is equal to the number of rows, so each row is a unique observation/patient.
 
+Next, I need to check if every column is a variable
 ```{r}
 names(cancer_subset)
+length(names(cancer_subset)) == ncol(cancer_subset)
 ```
 
-Each column is a unique variable since there are no repeats and every column has one variable.
+There are 8 unique variables, and 8 columns, so there are no repeats and each column is a unique variable.
 
 Each cell is a single measurement because there is a single value in each cell, which represents the measurement for a given variable for one patient
 
@@ -299,16 +312,19 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
-Since my data is tidy, I will make it untidy with pivot_longer. The variables can be split into 3 categories, mean, se or worst, so I will combine all variables concerning mean values, all variables concerning se values and all variables concerning worst values together.
+Since my data is tidy, I will make it untidy with pivot_longer. The variables can be split into 3 categories, mean, se or worst, so I will pivot all variables concerning mean values into 2 columns, 1 listing the variable name, and 1 listing the value of the variable. I will repeat this with all variables concerning se values and all variables concerning worst values together.
 
 ```{r}
 cancer_untidy <- cancer_sample %>% 
+  # Pivot the mean variables
   pivot_longer(cols = radius_mean:fractal_dimension_mean,
                names_to = "mean variable",
                values_to = "mean value") %>% 
+  # Pivot the se variables
   pivot_longer(cols = radius_se:fractal_dimension_se,
                names_to = "sd variable",
                values_to = "sd value") %>% 
+  # Pivot the worst variables
   pivot_longer(cols = radius_worst:fractal_dimension_worst,
                names_to = "worst variable",
                values_to = "worst value")
@@ -316,14 +332,17 @@ cancer_untidy <- cancer_sample %>%
 cancer_untidy
 ```
 
-Re-tidy the data back into it's original form
+Re-tidy the data back into it's original form. This is achieved by using pivot_wider where I previously did pivot_longer. All the variables stored in the "mean variable" column become their own column, and this is repeated for the se and worst variables.
 
 ```{r}
 cancer_tidy <- cancer_untidy %>% 
+  # Pivot the mean variables
   pivot_wider(names_from = "mean variable",
               values_from = "mean value") %>% 
+  # Pivot the se variables
   pivot_wider(names_from = "sd variable",
               values_from = "sd value") %>% 
+  # Pivot the worst variables
   pivot_wider(names_from = "worst variable",
               values_from = "worst value") 
 
@@ -360,11 +379,12 @@ Now, try to choose a version of your data that you think will be appropriate to 
 
 Since there are overlapping variables, I am going to create one dataset.
 
+I am selecting the relevant columns, removing any NA's if there are any, arranging into increasing order and remaking the categorical variable I made in Task 1.2 in case I want to use it.
 ```{r}
 rq_data <- cancer_sample %>% 
   select(ID, diagnosis,concave_points_mean,concavity_worst) %>% 
   filter(!is.na(concave_points_mean) & !is.na(concavity_worst)) %>% 
-  arrange(desc(concave_points_mean)) %>% 
+  arrange(concave_points_mean) %>% 
   mutate(concave_worst_category = case_when(concavity_worst < 0.45~ "small",
                                            concavity_worst >= 0.45 & concavity_worst < 0.9 ~ "medium",
                                            .default = "large")) 
@@ -384,7 +404,7 @@ Pick a research question from 1.2, and pick a variable of interest (we'll call i
 
 **Research Question**: Do patients with more concave points (concave_points_mean) also tend to have more severe concavity (concavity_worse)?
 
-**Variable of interest**: concavity_worst
+**Variable of interest**: Mean concavity (concavity_worst)
 
 <!----------------------------------------------------------------------------->
 
@@ -400,7 +420,7 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 
 <!-------------------------- Start your work below ---------------------------->
 
-I am fitting a linear model with worst concavity as the response and mean concave points as the predictor. I am going to test for the singificance of the regression coefficients
+I am fitting a linear model with worst concavity as the response and mean concave points as the predictor. I am going to test for the significance of the regression coefficients, which will tell if concave_points_mean is a good predictor for concavity_worse.
 
 ```{r}
 mod.fit <- lm(concavity_worst ~ concave_points_mean, data= rq_data)
@@ -425,7 +445,7 @@ I am going to use the tidy() function from the broom package to display the regr
 broom::tidy(mod.fit)
 ```
 
-We can see the coefficient for concave_points_mean is about 4, with a very small p-value, meaning it does significantly predict concavity_worst
+We can see the coefficient for concave_points_mean is about 4, with a very small p-value, meaning it does significantly predict concavity_worst.
 
 <!----------------------------------------------------------------------------->
 
